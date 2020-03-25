@@ -38,8 +38,8 @@ const files = [
 	"./resources/img/projectiles/rocket.png",
 	"./resources/img/projectiles/explosion.png",
 	"./resources/img/projectiles/fire.png",
-	"./resources/img/enemies/Cannon2_L.png",
-	"./resources/img/enemies/Cannon2_R.png",
+	"./resources/img/enemies/cannon/Cannon2_L.png",
+	"./resources/img/enemies/cannon/Cannon2_R.png",
 	"./resources/img/collectables/healthPack.png",
 	"./resources/img/collectables/manaPack.png"
 ];

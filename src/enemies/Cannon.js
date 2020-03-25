@@ -17,8 +17,8 @@ class Cannon extends Entity {
         this.width = frameWidth * this.scale;
         this.height = (frameHeight - 3) * this.scale;
         const animationSpeed = 0.05 * this.scale;
-        this.walkingRight = new Animation(ASSET_MANAGER.getAsset("./resources/img/enemies/Cannon2_R.png"), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, false);
-        this.walkingLeft = new Animation(ASSET_MANAGER.getAsset("./resources/img/enemies/Cannon2_L.png"), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, true);
+        this.walkingRight = new Animation(ASSET_MANAGER.getAsset("./resources/img/enemies/cannon/Cannon2_R.png"), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, false);
+        this.walkingLeft = new Animation(ASSET_MANAGER.getAsset("./resources/img/enemies/cannon/Cannon2_L.png"), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, true);
         this.jumping = false;
         this.walking = true;
         this.direction = DIRECTIONS.RIGHT;
