@@ -1,61 +1,18 @@
 // Reference: http://jsfiddle.net/gfcarv/QKgHs/ 
 /**
- * @description Rectangle class used mostly to represent camera viewport and map dimensions
- * @param {number} x     starting X coordinate
- * @param {number} y      starting Y coordinate
- * @param {number} width    width
- * @param {number} height   height
- */
-class Rectangle {
-  constructor(x, y, width, height) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.width = width || 0;
-    this.height = height || 0;
-    this.right = this.x + this.width;
-    this.bottom = this.y + this.height;
-  }
-  /**
-   * @description Sets rectangle to specified coordinates and dimensions
-   * @param {number}  x
-   * @param {number}  y
-   * @param {number}  [width]
-   * @param {number}  [height]
-   */
-  set(x, y, width, height) {
-    this.x = x;
-    this.y = y;
-    this.width = width || this.width;
-    this.height = height || this.height;
-    this.right = (this.x + this.width);
-    this.bottom = (this.y + this.height);
-  }
-  /**
-   * @param {Rectangle} rectangle  Rectangle that's being checked if this rectangle is inside of
-   *
-   * @returns {Boolean} if this rectangle is fully within rectangle, false otherwise
-   */
-  within(rectangle) {
-    return (rectangle.x <= this.x &&
-      rectangle.right >= this.right &&
-      rectangle.y <= this.y &&
-      rectangle.bottom >= this.bottom);
-  }
-}
-
-
-
-/**
- * @description Camera class
- * @param {Entity} followed         entity that camera will follow
- * @param {number} xView            x coordinate of top left of camera's view
- * @param {number} yView            y coordinate of top left of camera's view
- * @param {number} viewportWidth    width of camera's view
- * @param {number} viewportHeight   height of camera's view
- * @param {number} worldWidth       width of entire map
- * @param {number} worldHeight      height of entire map
+ * @ Camera class
  */
 class Camera {
+  /**
+   * Create a Camera object
+   * @param {Entity} followed         entity that camera will follow
+   * @param {number} xView            x coordinate of top left of camera's view
+   * @param {number} yView            y coordinate of top left of camera's view
+   * @param {number} viewportWidth    width of camera's view
+   * @param {number} viewportHeight   height of camera's view
+   * @param {number} worldWidth       width of entire map
+   * @param {number} worldHeight      height of entire map
+   */
   constructor(followed, xView, yView, viewportWidth, viewportHeight, worldWidth, worldHeight) {
     this.xView = xView || 0;
     this.yView = yView || 0;
@@ -69,9 +26,9 @@ class Camera {
     // rectangle that represents the world's boundary (room's boundary)
     this.worldRect = new Rectangle(0, 0, worldWidth, worldHeight);
   }
-  // gameObject needs to have "x" and "y" properties (as world(or room) position)
-  // noinspection JSUnusedGlobalSymbols
+
   /**
+   * Follow a new entity
    * @param {Entity} entity       entity camera is to follow
    * @param {number} xDeadZone    minimum distance from entity to viewport's edge on x axis
    * @param {number} yDeadZone    minimum distance from entity to viewport's edge on y axis
@@ -81,6 +38,10 @@ class Camera {
     this.xDeadZone = xDeadZone;
     this.yDeadZone = yDeadZone;
   }
+
+  /**
+   * Updates viewport based on coordinates of the followed entity in relation to the level's boundaries
+   */
   update() {
     // keep following the player (or other desired object)
     if (this.followed != null) {

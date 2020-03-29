@@ -10,7 +10,7 @@ class HealthPack extends Entity {
      */
     constructor(game, x, y) {
         super(game, x, y);
-        this.img = new Animation(ASSET_MANAGER.getAsset("./resources/img/collectables/healthPack.png"), 0, 0, 52, 52, 1, 1, true, false);
+        this.img = new Animation(ASSET_MANAGER.getAsset("./resources/img/environment/collectables/healthPack.png"), 0, 0, 52, 52, 1, 1, true, false);
         this.type = TYPES.COLLECTABLES.HEALTHPACK;
         this.healthValue = 25;
         this.scale = 1;

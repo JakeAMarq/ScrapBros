@@ -1,3 +1,8 @@
+/**
+ * Returns contents of .txt file as filePath as a string
+ * @param {string} filePath relative path of .txt file
+ * @returns {string}
+ */
 async function loadString(filePath) {
     let levelString = "";
     await fetch(filePath)
@@ -40,8 +45,8 @@ const files = [
 	"./resources/img/projectiles/fire.png",
 	"./resources/img/enemies/cannon/Cannon2_L.png",
 	"./resources/img/enemies/cannon/Cannon2_R.png",
-	"./resources/img/collectables/healthPack.png",
-	"./resources/img/collectables/manaPack.png"
+	"./resources/img/environment/collectables/healthPack.png",
+	"./resources/img/environment/collectables/manaPack.png"
 ];
 
 const ASSET_MANAGER = new AssetManager();
@@ -56,7 +61,7 @@ ASSET_MANAGER.downloadAll(async function () {
 
 	const gameEngine = new GameEngine();
 	const bg = new Background(gameEngine);
-	const healthManaBars = new HealthManaBars(gameEngine, 10, 10);
+	const healthManaBars = new ResourceBars(gameEngine, 10, 10);
 	const instructions = new Instructions(gameEngine, ctx.canvas.width - 370 * .75, 0);
 
 	const levelText = await loadString("./resources/levels/level3.txt");

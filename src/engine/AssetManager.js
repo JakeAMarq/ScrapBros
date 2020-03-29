@@ -1,5 +1,5 @@
 /**
- * Asset manager class for loading images
+ * Asset manager class for loading images from files
  */
 class AssetManager {
     constructor() {

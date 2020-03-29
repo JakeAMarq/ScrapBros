@@ -14,9 +14,11 @@ window.requestAnimFrame = (function () {
 })();
 
 
-// A timer for the game
+/**
+ * Timer used in GameEngine
+ */
 class Timer {
-    constructor(props) {
+    constructor() {
         this.gameTime = 0;
         this.maxStep = 0.05;
         this.wallLastTimestamp = 0;
@@ -32,39 +34,37 @@ class Timer {
     }
 }
 
-// Game engine
+/**
+ * GameEngine class
+ */
 class GameEngine {
     constructor() {
         this.camera = null;
         this.paused = false;
         this.entities = [];
         this.hudEntities = [];
-        this.showOutlines = false;
         this.ctx = null;
-        this.click = null;
-        this.mouse = null;
-        this.leftMouseDown = null;
-        this.rightMouseDown = null;
-        this.mouseX = null;
-        this.mouseY = null;
+
+        this.input = {
+            mouse: {
+                leftDown: false,
+                rightDown: false,
+                x: null,
+                y: null
+            },
+            keysActive : new Array(255).fill(false) // Keeps track of active keys on canvas
+        };
+
         this.lastMouseX = null; // used to update mouseX and mouseY even if the mouse doesn't move
         this.lastMouseY = null; // ^
-        this.lastXView = null; // ^
-        this.lastYView = null; // ^
-        this.wheel = null;
-        this.surfaceWidth = null;
-        this.surfaceHeight = null;
-        this.keysActive = null;
+        this.lastXView = null;  // ^
+        this.lastYView = null;  // ^
+
     }
     // The initialized function
     init(ctx, camera) {
         this.ctx = ctx;
         this.camera = camera;
-        this.surfaceWidth = this.ctx.canvas.width;
-        this.surfaceHeight = this.ctx.canvas.height;
-        this.leftMouseDown = false;
-        this.rightMouseDown = false;
-        this.keysActive = new Array(255).fill(false); // Keeps track of active keys on canvas
         this.startInput();
         this.timer = new Timer();
         console.log('game initialized');
@@ -72,7 +72,7 @@ class GameEngine {
     // Starting the game
     start() {
         console.log("starting game");
-        var that = this;
+        const that = this;
         (function gameLoop() {
             that.loop();
             requestAnimFrame(gameLoop, that.ctx.canvas);
@@ -80,13 +80,13 @@ class GameEngine {
     }
     startInput() {
         console.log('Starting input');
-        var that = this;
+        const that = this;
         this.ctx.canvas.addEventListener("keydown", function (e) {
             e.preventDefault();
-            //console.log(e);
+            console.log(e);
             // Array of all of the keys on the keyboard
             // Set key that is pressed to true
-            that.keysActive[e.which] = true;
+            that.input.keysActive[e.code] = true;
             if (e.code === "Escape") {
                 if (that.paused)
                     that.resume();
@@ -96,40 +96,31 @@ class GameEngine {
         }, false);
         // When a key is released
         this.ctx.canvas.addEventListener("keyup", function (e) {
-            that.keysActive[e.which] = false;
+            that.input.keysActive[e.code] = false;
         }, false);
         /*
         Set all keys to false when the canvas loses focus so that you character doesn't
         keep moving without the key pressed
         */
         this.ctx.canvas.addEventListener("focusout", function (e) {
-            that.keysActive.fill(false);
-            //that.attack = false;
+            that.input.keysActive.fill(false);
+            that.input.mouse.leftDown = false;
+            that.input.mouse.rightDown = false;
         });
-        // Right click event
-        this.ctx.canvas.addEventListener("contextmenu", (e) => {
-            // Action
-            //that.attack = true;
-        });
-        // Left click event
         this.ctx.canvas.addEventListener("mousedown", (e) => {
-            // Action
-            //that.keysActive.fill(true);
             if (e.which === 1) {
-                that.leftMouseDown = true;
+                that.input.mouse.leftDown = true;
             }
             else if (e.which === 3) {
-                that.rightMouseDown = true;
+                that.input.mouse.rightDown = true;
             }
         });
         this.ctx.canvas.addEventListener("mouseup", (e) => {
-            // Action
-            //that.keysActive.fill(true);
             if (e.which === 1) {
-                that.leftMouseDown = false;
+                that.input.mouse.leftDown = false;
             }
             else if (e.which === 3) {
-                that.rightMouseDown = false;
+                that.input.mouse.rightDown = false;
             }
         });
         this.ctx.canvas.addEventListener("mousemove", function (e) {
@@ -149,42 +140,29 @@ class GameEngine {
         this.ctx.save();
         for (let i = 0; i < this.entities.length; i++) {
             this.entities[i].draw(this.ctx, this.camera.xView, this.camera.yView);
-            // visualize hitboxes
-            // var ent = this.entities[i];
-            // if (ent.width && ent.height) {
-            //     this.ctx.save();
-            //     this.ctx.strokeStyle = "white";
-            //     this.ctx.strokeRect(ent.x - this.camera.xView, ent.y - this.camera.yView, ent.width, ent.height);
-            //     this.ctx.restore();
-            // }
-            // if (ent.collisionManager) {
-            //     this.ctx.save();
-            //     this.ctx.fillStyle = "red";
-            //     this.ctx.fillRect(ent.collisionManager.topBounds.x - this.camera.xView, ent.collisionManager.topBounds.y - this.camera.yView, ent.collisionManager.topBounds.width, ent.collisionManager.topBounds.height);
-            //     this.ctx.fillStyle = "blue";
-            //     this.ctx.fillRect(ent.collisionManager.botBounds.x - this.camera.xView, ent.collisionManager.botBounds.y - this.camera.yView, ent.collisionManager.botBounds.width, ent.collisionManager.botBounds.height);
-            //     this.ctx.fillStyle = "green";
-            //     this.ctx.fillRect(ent.collisionManager.leftBounds.x - this.camera.xView, ent.collisionManager.leftBounds.y - this.camera.yView, ent.collisionManager.leftBounds.width, ent.collisionManager.leftBounds.height);
-            //     this.ctx.fillStyle = "yellow";
-            //     this.ctx.fillRect(ent.collisionManager.rightBounds.x - this.camera.xView, ent.collisionManager.rightBounds.y - this.camera.yView, ent.collisionManager.rightBounds.width, ent.collisionManager.rightBounds.height);
-            //     this.ctx.restore();
-            // }
+            // this.entities[i].drawHitBox(this.ctx, this.camera.xView, this.camera.yView);
         }
+
+        // HUD must always be drawn over other entities
         for (let i = 0; i < this.hudEntities.length; i++) {
             this.hudEntities[i].draw(this.ctx, this.camera.xView, this.camera.yView);
         }
         this.ctx.restore();
     }
+    updateMousePosition() {
+        this.input.mouse.x = this.lastMouseX + this.camera.xView - this.lastXView;
+        this.input.mouse.y = this.lastMouseY + this.camera.yView - this.lastYView;
+    }
     update() {
         let i;
         let entity;
-        const entitiesCount = this.entities.length;
-        for (i = 0; i < entitiesCount; i++) {
+        for (i = 0; i < this.entities.length; i++) {
             entity = this.entities[i];
             if (!entity.removeFromWorld) {
                 entity.update();
             }
         }
+
         for (i = 0; i < this.hudEntities.length; i++) {
             entity = this.hudEntities[i];
             if (!entity.removeFromWorld) {
@@ -192,8 +170,7 @@ class GameEngine {
             }
         }
         this.camera.update();
-        this.mouseX = this.lastMouseX + this.camera.xView - this.lastXView;
-        this.mouseY = this.lastMouseY + this.camera.yView - this.lastYView;
+        this.updateMousePosition();
         for (i = this.entities.length - 1; i >= 0; --i) {
             if (this.entities[i].removeFromWorld) {
                 // console.log("removed entity"); 

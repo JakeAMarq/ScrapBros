@@ -95,7 +95,3 @@ class LevelBuilder {
         }
     }
 }
-
-LevelBuilder.prototype = new Entity();
-LevelBuilder.prototype.constructor = LevelBuilder;
-
