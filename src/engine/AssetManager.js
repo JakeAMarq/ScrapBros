@@ -1,7 +1,7 @@
 /**
  * Asset manager class for loading images from files
  */
-class AssetManager {
+export class AssetManager {
     constructor() {
         this.successCount = 0;
         this.errorCount = 0;
@@ -14,7 +14,7 @@ class AssetManager {
      * @param {String} path
      */
     queueDownload(path) {
-        console.log("Queueing " + path);
+        console.log('Queueing ' + path);
         this.downloadQueue.push(path);
     }
 
@@ -37,14 +37,14 @@ class AssetManager {
             const that = this;
             const path = this.downloadQueue[i];
             console.log(path);
-            img.addEventListener("load", function () {
-                console.log("Loaded " + this.src);
+            img.addEventListener('load', function () {
+                console.log('Loaded ' + this.src);
                 that.successCount++;
                 if (that.isDone())
                     callback();
             });
-            img.addEventListener("error", function () {
-                console.log("Error loading " + this.src);
+            img.addEventListener('error', function () {
+                console.log('Error loading ' + this.src);
                 that.errorCount++;
                 if (that.isDone())
                     callback();

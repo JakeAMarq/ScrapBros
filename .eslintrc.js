@@ -13,5 +13,10 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
+        "quotes": ["error", "single"],
+        "no-magic-numbers": [
+            "error",
+            { "ignore": [-1, 0, 1, 2, 1000], "ignoreArrayIndexes": true }
+        ]
     }
 };

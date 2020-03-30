@@ -19,3 +19,5 @@ const DIRECTIONS = {
     RIGHT: 1
 };
 Object.freeze(DIRECTIONS);
+
+export { TYPES, DIRECTIONS }

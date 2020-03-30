@@ -1,3 +1,5 @@
+import { Rectangle } from './Rectangle.js';
+
 /**
  * Returns true if entity1 overlaps with entity2, false otherwise
  * @param {Entity | Rectangle} entity1
@@ -11,16 +13,54 @@ function collisionDetected(entity1, entity2) {
         && entity1.y < entity2.y + entity2.height;
 }
 
+const TOP_BOUNDS_X_OFFSET_PERCENTAGE = 0.25;
+const TOP_BOUNDS_WIDTH_PERCENTAGE = 0.5;
+const TOP_BOUNDS_HEIGHT_PERCENTAGE = 0.5;
+
+const BOT_BOUNDS_X_OFFSET_PERCENTAGE = 0.25;
+const BOT_BOUNDS_Y_OFFSET_PERCENTAGE = 0.5;
+const BOT_BOUNDS_WIDTH_PERCENTAGE = 0.5;
+const BOT_BOUNDS_HEIGHT_PERCENTAGE = 0.5
+
+const LEFT_BOUNDS_Y_OFFSET_PERCENTAGE = 0.1;
+const LEFT_BOUNDS_WIDTH_PERCENTAGE = 0.15;
+const LEFT_BOUNDS_HEIGHT_PERCENTAGE = 0.8;
+
+const RIGHT_BOUNDS_X_OFFSET_PERCENTAGE = 0.75;
+const RIGHT_BOUNDS_Y_OFFSET_PERCENTAGE = 0.1;
+const RIGHT_BOUNDS_WIDTH_PERCENTAGE = 0.15;
+const RIGHT_BOUNDS_HEIGHT_PERCENTAGE = 0.8;
+
 /**
  * Collision manager for entities that need more complicated collision handling (ie. need to handle collisions differently
  * based on whether collision is on left, right, top, or bottom
  */
 class CollisionManager {
     constructor(x, y, width, height) {
-        this.botBounds = new Rectangle(x + 0.25 * width, y + 0.5 * height, 0.5 * width, 0.5 * height);
-        this.topBounds = new Rectangle(x + 0.25 * width, y, 0.5 * width, 0.5 * height);
-        this.rightBounds = new Rectangle(x + 0.75 * width, y + 0.1 * height, 0.15 * width, 0.8 * height);
-        this.leftBounds = new Rectangle(x, y + 0.1 * height, 0.15 * width, 0.8 * height);
+        this.topBounds = new Rectangle(
+            x + TOP_BOUNDS_X_OFFSET_PERCENTAGE * width, 
+            y, 
+            TOP_BOUNDS_WIDTH_PERCENTAGE * width, 
+            TOP_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
+        this.botBounds = new Rectangle(
+            x + BOT_BOUNDS_X_OFFSET_PERCENTAGE * width, 
+            y + BOT_BOUNDS_Y_OFFSET_PERCENTAGE * height, 
+            BOT_BOUNDS_WIDTH_PERCENTAGE * width,
+            BOT_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
+        this.leftBounds = new Rectangle(
+            x, 
+            y + LEFT_BOUNDS_Y_OFFSET_PERCENTAGE * height, 
+            LEFT_BOUNDS_WIDTH_PERCENTAGE * width, 
+            LEFT_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
+        this.rightBounds = new Rectangle(
+            x + RIGHT_BOUNDS_X_OFFSET_PERCENTAGE * width, 
+            y + RIGHT_BOUNDS_Y_OFFSET_PERCENTAGE * height, 
+            RIGHT_BOUNDS_WIDTH_PERCENTAGE * width, 
+            RIGHT_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
     }
 
     /**
@@ -31,10 +71,30 @@ class CollisionManager {
      * @param height
      */
     updateDimensions(x, y, width, height) {
-        this.botBounds.set(x + 0.25 * width, y + height / 2, 0.5 * width, 0.5 * height);
-        this.topBounds.set(x + 0.25 * width, y, 0.5 * width, 0.5 * height);
-        this.rightBounds.set(x + 0.75 * width, y + 0.1 * height, 0.25 * width, 0.8 * height);
-        this.leftBounds.set(x, y + 0.1 * height, 0.25 * width, 0.8 * height);
+        this.topBounds.set(
+            x + TOP_BOUNDS_X_OFFSET_PERCENTAGE * width, 
+            y, 
+            TOP_BOUNDS_WIDTH_PERCENTAGE * width, 
+            TOP_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
+        this.botBounds.set(
+            x + BOT_BOUNDS_X_OFFSET_PERCENTAGE * width, 
+            y + BOT_BOUNDS_Y_OFFSET_PERCENTAGE * height, 
+            BOT_BOUNDS_WIDTH_PERCENTAGE * width,
+            BOT_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
+        this.leftBounds.set(
+            x, 
+            y + LEFT_BOUNDS_Y_OFFSET_PERCENTAGE * height, 
+            LEFT_BOUNDS_WIDTH_PERCENTAGE * width, 
+            LEFT_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
+        this.rightBounds.set(
+            x + RIGHT_BOUNDS_X_OFFSET_PERCENTAGE * width, 
+            y + RIGHT_BOUNDS_Y_OFFSET_PERCENTAGE * height, 
+            RIGHT_BOUNDS_WIDTH_PERCENTAGE * width, 
+            RIGHT_BOUNDS_HEIGHT_PERCENTAGE * height
+        );
     }
 
     /**
@@ -74,8 +134,4 @@ class CollisionManager {
     }
 }
 
-
-
-
-
-
+export { collisionDetected, CollisionManager };

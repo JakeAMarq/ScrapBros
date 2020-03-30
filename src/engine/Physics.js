@@ -11,7 +11,7 @@
  *
  * @description Attach physics properties to an object
  */
-class Physics {
+export class Physics {
     constructor(startX, startY, duration, cursorX, cursorY, gravity, initalVelocity, velocity, acceleration) {
         this.cursorX = cursorX;
         this.cursorY = cursorY;
@@ -92,14 +92,6 @@ class Physics {
         return Math.atan2(deltaY, deltaX);
     }
     /**
-     * @param {boolean} bounces
-     * @param {boolean} sticks
-     *
-     * @description Defines the action that occurs when the object collides with another.
-     */
-    collision(bounces, sticks) {
-    }
-    /**
      * @param {Number} gravity - Graviational Constant in pixels per frame
      */
     setGravity(gravity) {
@@ -126,15 +118,15 @@ class Physics {
      * @description Returns the current angle. By default it returns the value in radians,
      * insert the a parameter "deg" to get the angle in degrees
      */
-    getAngle(type = "rad") {
+    getAngle(type = 'rad') {
         var angle = this.calculateAngle(this.startX, this.startY, this.cursorX, this.cursorY);
-        return type === "deg" ? angle * Math.PI / 180.0 : angle;
+        return type === 'deg' ? angle * Math.PI / 180.0 : angle;
     }
     /**
      * @returns {Object} Object with x , y coordinates
      */
     getPosition() {
-        return { "x": this.x, "y": this.y };
+        return { 'x': this.x, 'y': this.y };
     }
     /**
      * @return {boolean} true if the object has achieved it's goal (timeout, collision, etc.)

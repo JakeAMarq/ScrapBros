@@ -1,7 +1,13 @@
+import { Entity } from './engine/Entity.js';
+import { collisionDetected, CollisionManager } from './engine/CollisionManager.js';
+import { TYPES, DIRECTIONS } from './Enums.js';
+import { Animation } from './engine/Animation.js';
+import { Fire } from './Projectiles.js';
+
 /**
  * Cannon
  */
-class Cannon extends Entity {
+export class Cannon extends Entity {
     /**
      * Constructor
      * @param {GameEngine} game
@@ -17,8 +23,8 @@ class Cannon extends Entity {
         this.width = frameWidth * this.scale;
         this.height = (frameHeight - 3) * this.scale;
         const animationSpeed = 0.05 * this.scale;
-        this.walkingRight = new Animation(ASSET_MANAGER.getAsset("./resources/img/enemies/cannon/Cannon2_R.png"), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, false);
-        this.walkingLeft = new Animation(ASSET_MANAGER.getAsset("./resources/img/enemies/cannon/Cannon2_L.png"), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, true);
+        this.walkingRight = new Animation(this.game.assetManager.getAsset('./resources/img/enemies/cannon/Cannon2_R.png'), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, false);
+        this.walkingLeft = new Animation(this.game.assetManager.getAsset('./resources/img/enemies/cannon/Cannon2_L.png'), 0, 0, frameWidth, frameHeight, animationSpeed, 10, true, true);
         this.jumping = false;
         this.walking = true;
         this.direction = DIRECTIONS.RIGHT;

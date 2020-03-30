@@ -1,5 +1,8 @@
 // This game shell was happily copied from Googler Seth Ladd's "Bad Aliens" game and his Google IO talk in 2011
 
+const SIXTIETH_OF_SECOND = 16.66667;
+const LEFT_MOUSE_BUTTON_MOUSE_EVENT_CODE = 0;
+const RIGHT_MOUSE_BUTTON_MOUSE_EVENT_CODE = 2;
 
 // Requests an animation frame
 window.requestAnimFrame = (function () {
@@ -8,15 +11,11 @@ window.requestAnimFrame = (function () {
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
-            function (/* function */ callback, /* DOMElement */ element) {
-                window.setTimeout(callback, 1000 / 60);
+            function (callback) {
+                window.setTimeout(callback, SIXTIETH_OF_SECOND);
             };
 })();
 
-
-/**
- * Timer used in GameEngine
- */
 class Timer {
     constructor() {
         this.gameTime = 0;
@@ -37,9 +36,10 @@ class Timer {
 /**
  * GameEngine class
  */
-class GameEngine {
-    constructor() {
+export class GameEngine {
+    constructor(assetManager) {
         this.camera = null;
+        this.assetManager = assetManager;
         this.paused = false;
         this.entities = [];
         this.hudEntities = [];
@@ -52,7 +52,7 @@ class GameEngine {
                 x: null,
                 y: null
             },
-            keysActive : new Array(255).fill(false) // Keeps track of active keys on canvas
+            keysActive : [] // Keeps track of active keys on canvas
         };
 
         this.lastMouseX = null; // used to update mouseX and mouseY even if the mouse doesn't move
@@ -71,23 +71,21 @@ class GameEngine {
     }
     // Starting the game
     start() {
-        console.log("starting game");
+        console.log('starting game');
         const that = this;
         (function gameLoop() {
             that.loop();
-            requestAnimFrame(gameLoop, that.ctx.canvas);
+            window.requestAnimFrame(gameLoop, that.ctx.canvas);
         })();
     }
     startInput() {
         console.log('Starting input');
         const that = this;
-        this.ctx.canvas.addEventListener("keydown", function (e) {
+        this.ctx.canvas.addEventListener('keydown', function (e) {
             e.preventDefault();
-            console.log(e);
-            // Array of all of the keys on the keyboard
             // Set key that is pressed to true
             that.input.keysActive[e.code] = true;
-            if (e.code === "Escape") {
+            if (e.code === 'Escape') {
                 if (that.paused)
                     that.resume();
                 else
@@ -95,35 +93,37 @@ class GameEngine {
             }
         }, false);
         // When a key is released
-        this.ctx.canvas.addEventListener("keyup", function (e) {
+        this.ctx.canvas.addEventListener('keyup', function (e) {
             that.input.keysActive[e.code] = false;
         }, false);
         /*
         Set all keys to false when the canvas loses focus so that you character doesn't
         keep moving without the key pressed
         */
-        this.ctx.canvas.addEventListener("focusout", function (e) {
+        this.ctx.canvas.addEventListener('focusout', function () {
             that.input.keysActive.fill(false);
             that.input.mouse.leftDown = false;
             that.input.mouse.rightDown = false;
         });
-        this.ctx.canvas.addEventListener("mousedown", (e) => {
-            if (e.which === 1) {
+        this.ctx.canvas.addEventListener('mousedown', (e) => {
+            console.log(e);
+            if (e.button === LEFT_MOUSE_BUTTON_MOUSE_EVENT_CODE) {
                 that.input.mouse.leftDown = true;
             }
-            else if (e.which === 3) {
+            else if (e.button === RIGHT_MOUSE_BUTTON_MOUSE_EVENT_CODE) {
                 that.input.mouse.rightDown = true;
             }
         });
-        this.ctx.canvas.addEventListener("mouseup", (e) => {
-            if (e.which === 1) {
+        this.ctx.canvas.addEventListener('mouseup', (e) => {
+            console.log(e);
+            if (e.button === LEFT_MOUSE_BUTTON_MOUSE_EVENT_CODE) {
                 that.input.mouse.leftDown = false;
             }
-            else if (e.which === 3) {
+            else if (e.button === RIGHT_MOUSE_BUTTON_MOUSE_EVENT_CODE) {
                 that.input.mouse.rightDown = false;
             }
         });
-        this.ctx.canvas.addEventListener("mousemove", function (e) {
+        this.ctx.canvas.addEventListener('mousemove', function (e) {
             that.lastMouseX = e.clientX + that.camera.xView;
             that.lastMouseY = e.clientY + that.camera.yView;
             that.lastXView = that.camera.xView;
@@ -187,7 +187,7 @@ class GameEngine {
     }
     pause() {
         this.paused = true;
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
     resume() {

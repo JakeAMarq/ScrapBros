@@ -5,40 +5,13 @@
     <meta charset="utf-8">
     <link rel="shortcut icon" type="image/x-icon" href="resources/img/icon.png">
     <title> Scrap Bros </title>
-
-    <script type="text/javascript" src="src/engine/Animation.js"></script>
-    <script type="text/javascript" src="src/engine/AssetManager.js"></script>
-    <script type="text/javascript" src="src/engine/Camera.js"></script>
-    <script type="text/javascript" src="src/engine/CollisionManager.js"></script>
-    <script type="text/javascript" src="src/engine/Entity.js"></script>
-    <script type="text/javascript" src="src/engine/GameEngine.js"></script>
-    <script type="text/javascript" src="src/engine/LevelBuilder.js"></script>
-    <script type="text/javascript" src="src/engine/Rectangle.js"></script>
-
-    <script type="text/javascript" src="src/enemies/Cannon.js"></script>
-
-    <script type="text/javascript" src="src/enums/Enums.js"></script>
-
-    <script type="text/javascript" src="src/environment/BackGround.js"></script>
-    <script type="text/javascript" src="src/environment/Platform.js"></script>
-    <script type="text/javascript" src="src/environment/Spike.js"></script>
-    <script type="text/javascript" src="src/environment/collectables/HealthPack.js"></script>
-    <script type="text/javascript" src="src/environment/collectables/ManaPack.js"></script>
-
-    <script type="text/javascript" src="src/hud/ResourceBars.js"></script>
-    <script type="text/javascript" src="src/hud/Instructions.js"></script>
-    <script type="text/javascript" src="src/hud/SplashScreen.js"></script>
-
-    <script type="text/javascript" src="src/Hero.js"></script>
-    <script type="text/javascript" src="src/Physics.js"></script>
-    <script type="text/javascript" src="src/Projectiles.js"></script>
-    <script type="text/javascript" src="src/Main.js"></script>
     <script type="text/javascript">
         // Auto focus canvas when the page finishes loading
         window.addEventListener('load', function () {
             document.getElementById("gameWorld").focus();
-        });
+        });   
     </script>
+    <script type="module" src="src/Main.js"></script>
 </head>
 <body>
     <canvas id="gameWorld" tabindex="1" width="1000" height="750" style="border: 1px solid rgb(0, 0, 0); background: rgb(127, 180, 194); cursor: url(resources/img/hud/Cursor.png) -6 -6, crosshair"></canvas>

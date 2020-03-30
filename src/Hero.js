@@ -1,7 +1,15 @@
+import { Entity } from './engine/Entity.js';
+import { DIRECTIONS, TYPES } from './Enums.js';
+import { collisionDetected, CollisionManager } from './engine/CollisionManager.js';
+import { Rocket, Fire } from './Projectiles.js';
+import { Animation } from './engine/Animation.js';
+
+const IDLE_FRAME_WIDTH = 191;
+
 /**
  * Class for the playable hero
  */
-class Hero extends Entity {
+export class Hero extends Entity {
     /**
      * Create a Hero object
      * @param {GameEngine} game
@@ -11,14 +19,14 @@ class Hero extends Entity {
     constructor(game, x, y) {
         super(game, x, y);
         // Animations
-        this.idleR = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Idle_R.png"), 0, 0, 191, 351, 0.06, 10, true, false);
-        this.idleL = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Idle_L.png"), 0, 0, 191, 351, 0.06, 10, true, false);
-        this.RunningR = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Walk2_R.png"), 0, 0, 214, 359, 0.04, 10, true, false);
-        this.RunningL = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Walk2_L.png"), 0, 0, 214, 359, 0.04, 10, true, false);
-        this.jumpAnimationR = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Jump2_R.png"), 0, 0, 213, 344, 0.2, 10, true, false);
-        this.jumpAnimationL = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Jump2_L.png"), 0, 0, 213, 344, 0.2, 10, true, false);
-        this.shootAnimationR = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Shoot2_R.png"), 0, 0, 223, 344, 0.03, 5, true, false);
-        this.shootAnimationL = new Animation(ASSET_MANAGER.getAsset("./resources/img/hero/Cyborg_Shoot2_L.png"), 0, 0, 223, 344, 0.03, 5, true, false);
+        this.idleR = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_R.png'), 0, 0, IDLE_FRAME_WIDTH, 351, 0.06, 10, true, false);
+        this.idleL = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_L.png'), 0, 0, IDLE_FRAME_WIDTH, 351, 0.06, 10, true, false);
+        this.RunningR = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Walk2_R.png'), 0, 0, 214, 359, 0.04, 10, true, false);
+        this.RunningL = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Walk2_L.png'), 0, 0, 214, 359, 0.04, 10, true, false);
+        this.jumpAnimationR = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Jump2_R.png'), 0, 0, 213, 344, 0.2, 10, true, false);
+        this.jumpAnimationL = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Jump2_L.png'), 0, 0, 213, 344, 0.2, 10, true, false);
+        this.shootAnimationR = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Shoot2_R.png'), 0, 0, 223, 344, 0.03, 5, true, false);
+        this.shootAnimationL = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Shoot2_L.png'), 0, 0, 223, 344, 0.03, 5, true, false);
 
         this.jumping = false;                   // if the hero is jumping
         this.shootingBullets = false;           // if the hero is attacking

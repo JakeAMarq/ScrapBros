@@ -1,5 +1,11 @@
+import { Entity } from './engine/Entity.js';
+import { TYPES } from './Enums.js';
+import { collisionDetected } from './engine/CollisionManager.js';
+import { Physics } from './engine/Physics.js';
+import { Animation } from './engine/Animation.js';
+
 /**
- * @description Super class for projectiles
+ * Super class for projectiles
  * @param {GameEngine} game     the game engine
  * @param {number} x            starting X value
  * @param {number} y            starting Y value
@@ -82,12 +88,12 @@ class Rocket extends Projectile {
         var accel = 0;
         var timeAlive = 100;
         var physics = new Physics(x, y, timeAlive, destX, destY, gravity, initialVelocity, velocity, accel);
-        var img = new Animation(ASSET_MANAGER.getAsset("./resources/img/projectiles/rocket.png"), 0, 0, 51, 60, .20, 1, true, false);
+        var img = new Animation(game.assetManager.getAsset('./resources/img/projectiles/rocket.png'), 0, 0, 51, 60, .20, 1, true, false);
         super(game, x, y, scale, fireRate, damage, friendly, physics, img);
         this.width = 25 * scale;
         this.height = 25 * scale;
         this.manaCost = 5;
-        this.explosion = new Animation(ASSET_MANAGER.getAsset("./resources/img/projectiles/explosion.png"), 0, 0, 51, 51, 0.025, 7, false, false);
+        this.explosion = new Animation(this.game.assetManager.getAsset('./resources/img/projectiles/explosion.png'), 0, 0, 51, 51, 0.025, 7, false, false);
         this.exploding = false;
         this.explosion_audio = false; // make sure the explosion sound only plays once.
         this.shoot_audio = false;
@@ -170,7 +176,7 @@ class Fire extends Projectile {
         var accel = 0;
         var timeAlive = 40;
         var physics = new Physics(x, y, timeAlive, destX, destY, gravity, initialVelocity, velocity, accel);
-        var img = new Animation(ASSET_MANAGER.getAsset("./resources/img/projectiles/fire.png"), 0, 0, 25, 12, Math.random() * .03 + 0.1, 10, false, false);
+        var img = new Animation(game.assetManager.getAsset('./resources/img/projectiles/fire.png'), 0, 0, 25, 12, Math.random() * .03 + 0.1, 10, false, false);
         super(game, x, y, scale, fireRate, damage, friendly, physics, img);
         this.width = 9 * scale;
         this.height = 9 * scale;
@@ -184,3 +190,5 @@ class Fire extends Projectile {
         ctx.restore();
     }
 }
+
+export { Rocket, Fire };

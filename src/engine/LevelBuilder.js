@@ -1,9 +1,15 @@
+import { Platform } from '../environment/Platform.js';
+import { Spike } from '../environment/Spike.js';
+import { Hero } from '../Hero.js';
+import { Cannon } from '../Enemies.js';
+import { HealthPack, ManaPack } from '../environment/Collectables.js'
+
 /**
  * @description Level class that builds level based off of string and stores level information
  * @param {GameEngine} game
  * @param {String} levelText
  */
-class LevelBuilder {
+export class LevelBuilder {
     constructor(game, levelText) {
         this.game = game;
         this.width = 0;
@@ -18,70 +24,69 @@ class LevelBuilder {
         var tileSize = 52;
         var y = 0;
         var x = 0;
+        let entity;
         for (var i = 0; i < levelText.length; i++) {
             var char = levelText.charAt(i);
             switch (char) { // add tile entity at x * tilesize and y for y coordinates
                 case '.': // standard floor tile
-                    var platform = new Platform(this.game, x * tileSize, y, "floor");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'floor');
+                    this.game.addEntity(entity);
                     break;
                 case '=': // standard floor tile
-                    var platform = new Platform(this.game, x * tileSize, y, "bricks");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'bricks');
+                    this.game.addEntity(entity);
                     break;
                 case '>': // goes on the right side of floor tile ...>
-                    var platform = new Platform(this.game, x * tileSize, y, "gap_right");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'gap_right');
+                    this.game.addEntity(entity);
                     break;
                 case '<': // goes on the left side of floor tile <...
-                    var platform = new Platform(this.game, x * tileSize, y, "gap_left");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'gap_left');
+                    this.game.addEntity(entity);
                     break;
-                case '^': // spikes on a steel blockd 
-                    var spike = new Spike(this.game, x * tileSize, y, "steel_block_spikes");
-                    this.game.addEntity(spike);
+                case '^': // entitys on a steel blockd 
+                    entity = new Spike(this.game, x * tileSize, y, 'steel_block_spikes');
+                    this.game.addEntity(entity);
                     break;
-                case '*': // floating spikes
-                    var spike = new Spike(this.game, x * tileSize, y, "floating_spikes");
-                    this.game.addEntity(spike);
+                case '*': // floating entitys
+                    entity = new Spike(this.game, x * tileSize, y, 'floating_spikes');
+                    this.game.addEntity(entity);
                     break;
-                case '#': // floor spikes replace floor tiles
-                    var spike = new Spike(this.game, x * tileSize, y, "floor_spikes");
-                    this.game.addEntity(spike);
+                case '#': // floor entitys replace floor tiles
+                    entity = new Spike(this.game, x * tileSize, y, 'floor_spikes');
+                    this.game.addEntity(entity);
                     break;
                 case '-': // floating steel block
-                    var platform = new Platform(this.game, x * tileSize, y, "steel_block");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'steel_block');
+                    this.game.addEntity(entity);
                     break;
-                    d;
                 case '?': // transparent block
-                    var platform = new Platform(this.game, x * tileSize, y, "invisible");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'invisible');
+                    this.game.addEntity(entity);
                     break;
                 case 's': // checkpoint
-                    var platform = new Platform(this.game, x * tileSize, y, "checkpoint");
-                    this.game.addEntity(platform);
+                    entity = new Platform(this.game, x * tileSize, y, 'checkpoint');
+                    this.game.addEntity(entity);
                     break;
-                    d;
                 case '+': // win upon collision
-                    var winTile = new Platform(this.game, x * tileSize, y, "win");
-                    this.game.addEntity(winTile);
+                    entity = new Platform(this.game, x * tileSize, y, 'win');
+                    this.game.addEntity(entity);
                     break;
                 case 'p': //player spawn
-                    var hero = new Hero(this.game, x * tileSize, y);
-                    this.game.entities.splice(1, 0, hero); //entities[1] = hero
+                    entity = new Hero(this.game, x * tileSize, y);
+                    this.game.entities.splice(1, 0, entity); //entities[1] = hero
                     break;
                 case 'c': //cannon spawn
-                    var e1 = new Cannon(this.game, x * tileSize, y);
-                    this.game.addEntity(e1);
+                    entity = new Cannon(this.game, x * tileSize, y);
+                    this.game.addEntity(entity);
                     break;
                 case 'h': //health pack
-                    var healthPack = new HealthPack(this.game, x * tileSize, y);
-                    this.game.addEntity(healthPack);
+                    entity = new HealthPack(this.game, x * tileSize, y);
+                    this.game.addEntity(entity);
                     break;
                 case 'm': //mana pack
-                    var manaPack = new ManaPack(this.game, x * tileSize, y);
-                    this.game.addEntity(manaPack);
+                    entity = new ManaPack(this.game, x * tileSize, y);
+                    this.game.addEntity(entity);
                     break;
                 case '\n': //break
                     y += tileSize;

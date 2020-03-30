@@ -1,8 +1,9 @@
 // Reference: http://jsfiddle.net/gfcarv/QKgHs/ 
+import { Rectangle } from './Rectangle.js';
 /**
  * @ Camera class
  */
-class Camera {
+export class Camera {
   /**
    * Create a Camera object
    * @param {Entity} followed         entity that camera will follow

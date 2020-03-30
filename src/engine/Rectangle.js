@@ -1,7 +1,7 @@
 /**
  * Rectangle class used mostly to represent camera viewport and map dimensions
  */
-class Rectangle {
+export class Rectangle {
     /**
      * Create a rectangle
      * @param {number} x starting X coordinate

@@ -1,7 +1,7 @@
 /**
  * Animation class for spriteSheet animations
  */
-class Animation {
+export class Animation {
     /**
      * Constructor
      * @param {Image} spriteSheet
