@@ -1,10 +1,13 @@
-import { Entity } from './engine/Entity.js';
+import { Entity } from './engine/Entity';
 import { Animation } from './engine/Animation.js';
+import { GameEngine } from './engine/GameEngine.js';
 
 class Instructions extends Entity {
-    constructor(game, x, y) {
+    width: number = 370;
+
+    constructor(game: GameEngine, x: number, y: number) {
         super(game, x, y);
-        this.img = new Animation(this.game.assetManager.getAsset('./resources/img/hud/Instructions.png'), 0, 0, 370, 202, 1, 1, true, true);
+        this.img = new Animation(this.game.assetManager.getAsset('./resources/img/hud/Instructions.png'), 0, 0, width, 202, 1, 1, true, true);
     }
     draw(ctx) {
         if (!this.game.entities[1].win)
