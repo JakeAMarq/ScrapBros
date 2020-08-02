@@ -1,22 +1,29 @@
-import { Entity } from './engine/Entity';
+import { Entity } from './engine/Entity.js';
 import { Animation } from './engine/Animation.js';
 import { GameEngine } from './engine/GameEngine.js';
 
 class Instructions extends Entity {
     width: number = 370;
+    img: Animation;
 
     constructor(game: GameEngine, x: number, y: number) {
         super(game, x, y);
-        this.img = new Animation(this.game.assetManager.getAsset('./resources/img/hud/Instructions.png'), 0, 0, width, 202, 1, 1, true, true);
+        this.img = new Animation(this.game.assetManager.getAsset('./resources/img/hud/Instructions.png'), 0, 0, this.width, 202, 1, 1, true, true);
     }
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         if (!this.game.entities[1].win)
             this.img.drawFrame(this.game.clockTick, ctx, this.x, this.y, .75);
     }
 }
 
 class ResourceBars extends Entity {
-    constructor(game, x, y) {
+    backgroundBars: Animation;
+    overlay: Animation;
+    weapon: Animation;
+    healthPercent: number;
+    manaPercent: number;
+    scale: number;
+    constructor(game: GameEngine, x: number, y: number) {
         super(game, x, y);
         this.backgroundBars = new Animation(this.game.assetManager.getAsset('./resources/img/hud/HP_bars_background.png'), 0, 0, 658, 164, 1, 1, true, false);
         this.overlay = new Animation(this.game.assetManager.getAsset('./resources/img/hud/HP_bars.png'), 0, 0, 658, 164, 1, 1, true, false);
@@ -34,7 +41,7 @@ class ResourceBars extends Entity {
         if (this.manaPercent < 0)
             this.manaPercent = 0;
     }
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         var hpWidth = 440 * this.healthPercent; // width of hp bar in pixels
         var mpWidth = 323 * this.manaPercent; // width of mp bar in pixels
         // draw background bars
@@ -75,12 +82,14 @@ class ResourceBars extends Entity {
 }
 
 class SplashScreen extends Entity {
-    constructor(game) {
+    img: Animation;
+    visible: boolean;
+    constructor(game: GameEngine) {
         super(game, 0, 0);
         this.img = new Animation(this.game.assetManager.getAsset('./resources/img/hud/title_screen.png'), 0, 0, 1000, 750, 1, 1, true, true);
         this.visible = true;
     }
-    draw(ctx) {
+    draw(ctx: CanvasRenderingContext2D) {
         if (this.visible)
             this.img.drawFrame(this.game.clockTick, ctx, this.x, this.y);
     }

@@ -10,7 +10,7 @@ import { Camera } from './engine/Camera.js';
  * @param {string} filePath relative path of .txt file
  * @returns {string}
  */
-async function loadString(filePath) {
+async function loadString(filePath: string) {
     let levelString = '';
     await fetch(filePath)
             .then(response => response.text())
@@ -63,7 +63,7 @@ imageFilePaths.forEach(function (file) {
 });
 
 ASSET_MANAGER.downloadAll(async function () {
-	const canvas = document.getElementById('gameWorld');
+	const canvas = document.getElementById('gameWorld') as HTMLCanvasElement;
 	const ctx = canvas.getContext('2d');
 
 	const gameEngine = new GameEngine(ASSET_MANAGER);

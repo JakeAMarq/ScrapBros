@@ -1,12 +1,17 @@
 import { Entity } from '../engine/Entity.js';
-import { TYPES } from '../Enums.js';
+import { Types } from '../Enums.js';
 import { CollisionManager } from '../engine/CollisionManager.js';
 import { Animation } from '../engine/Animation.js';
+import { GameEngine } from '../engine/GameEngine.js';
 
 export class Spike extends Entity{
-    constructor(game, x, y, spikeType) {
+    collisionManager: CollisionManager;
+    damage: number;
+    filePath: string;
+    tile: Animation;
+    constructor(game: GameEngine, x: number, y: number, spikeType: string) {
         super(game, x, y);
-        this.type = TYPES.SPIKE;
+        this.type = Types.Spike;
         this.width = 52;
         this.height = 52;
         this.collisionManager = new CollisionManager(x, y, this.width, this.height);
@@ -30,10 +35,9 @@ export class Spike extends Entity{
                 this.filePath += 'floor_spikes.png';
                 break;
         }
-        console.log(this.filePath);
         this.tile = new Animation(this.game.assetManager.getAsset(this.filePath), 0, 0, this.width, this.height, .20, 1, true, true);
     }
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         this.tile.drawFrame(this.game.clockTick, ctx, this.x - xView, this.y - yView);
         Entity.prototype.draw.call(this);
     }

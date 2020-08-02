@@ -1,4 +1,5 @@
 import { Rectangle } from './Rectangle.js';
+import { Entity } from './Entity.js';
 
 /**
  * Returns true if entity1 overlaps with entity2, false otherwise
@@ -6,7 +7,7 @@ import { Rectangle } from './Rectangle.js';
  * @param {Entity | Rectangle} entity2
  * @returns {boolean} true if entity1 overlaps with entity2, false otherwise
  */
-function collisionDetected(entity1, entity2) {
+function collisionDetected(entity1: Entity | Rectangle, entity2: Entity | Rectangle) {
     return entity1.x + entity1.width >= entity2.x
         && entity1.x <= entity2.x + entity2.width
         && entity1.y + entity1.height >= entity2.y
@@ -36,7 +37,17 @@ const RIGHT_BOUNDS_HEIGHT_PERCENTAGE = 0.8;
  * based on whether collision is on left, right, top, or bottom
  */
 class CollisionManager {
-    constructor(x, y, width, height) {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+
+    topBounds: Rectangle;
+    botBounds: Rectangle;
+    leftBounds: Rectangle;
+    rightBounds: Rectangle;
+
+    constructor(x: number, y: number, width: number, height: number) {
         this.topBounds = new Rectangle(
             x + TOP_BOUNDS_X_OFFSET_PERCENTAGE * width, 
             y, 
@@ -70,7 +81,7 @@ class CollisionManager {
      * @param width
      * @param height
      */
-    updateDimensions(x, y, width, height) {
+    updateDimensions(x: number, y: number, width: number, height: number) {
         this.topBounds.set(
             x + TOP_BOUNDS_X_OFFSET_PERCENTAGE * width, 
             y, 
@@ -102,7 +113,7 @@ class CollisionManager {
      * @param {Entity | Rectangle} entity
      * @returns {boolean} true if topBounds and entity overlap, false otherwise
      */
-    topCollisionDetected(entity) {
+    topCollisionDetected(entity: Entity | Rectangle) {
         return collisionDetected(this.topBounds, entity);
     }
 
@@ -111,7 +122,7 @@ class CollisionManager {
      * @param {Entity | Rectangle} entity
      * @returns {boolean} true if botBounds and entity overlap, false otherwise
      */
-    botCollisionDetected(entity) {
+    botCollisionDetected(entity: Entity | Rectangle) {
         return collisionDetected(this.botBounds, entity);
     }
 
@@ -120,7 +131,7 @@ class CollisionManager {
      * @param {Entity | Rectangle} entity
      * @returns {boolean} true if leftBounds and entity overlap, false otherwise
      */
-    leftCollisionDetected(entity) {
+    leftCollisionDetected(entity: Entity | Rectangle) {
         return collisionDetected(this.leftBounds, entity);
     }
 
@@ -129,7 +140,7 @@ class CollisionManager {
      * @param {Entity | Rectangle} entity
      * @returns {boolean} true if rightBounds and entity overlap, false otherwise
      */
-    rightCollisionDetected(entity) {
+    rightCollisionDetected(entity: Entity | Rectangle) {
         return collisionDetected(this.rightBounds, entity);
     }
 }

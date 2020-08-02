@@ -1,4 +1,4 @@
-import { GameEngine } from "./GameEngine";
+import { GameEngine } from "GameEngine";
 import { Types } from "../Enums";
 
 /**
@@ -12,6 +12,11 @@ export class Entity {
     height: number;
     type: Types;
     removeFromWorld: boolean;
+    win: any;
+    currentHP: any;
+    maxHP: any;
+    currentMP: any;
+    maxMP: any;
 
     /**
      * Create an Entity object
@@ -19,7 +24,7 @@ export class Entity {
      * @param {Number} x
      * @param {Number} y
      */
-    constructor(game, x, y) {
+    constructor(game: GameEngine, x: number, y: number) {
         this.game = game;
         this.x = x;
         this.y = y;
@@ -38,7 +43,7 @@ export class Entity {
     /**
      * Draw Entity on canvas
      */
-    draw(ctx: CanvasRenderingContext2D) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
     }
 
     /**

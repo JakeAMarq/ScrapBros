@@ -3,6 +3,7 @@ import { Spike } from '../environment/Spike.js';
 import { Hero } from '../Hero.js';
 import { Cannon } from '../Enemies.js';
 import { HealthPack, ManaPack } from '../environment/Collectables.js'
+import { GameEngine } from './GameEngine.js';
 
 /**
  * @description Level class that builds level based off of string and stores level information
@@ -10,7 +11,13 @@ import { HealthPack, ManaPack } from '../environment/Collectables.js'
  * @param {String} levelText
  */
 export class LevelBuilder {
-    constructor(game, levelText) {
+
+    game: GameEngine;
+    width: number;
+    height: number;
+
+
+    constructor(game: GameEngine, levelText: string) {
         this.game = game;
         this.width = 0;
         this.height = 0;
@@ -18,9 +25,9 @@ export class LevelBuilder {
     }
     /**
      * @description Builds level based off string and sets level's dimensions
-     * @param {String} levelText string representing level
+     * @param {string} levelText string representing level
      */
-    build(levelText) {
+    build(levelText: string) {
         var tileSize = 52;
         var y = 0;
         var x = 0;

@@ -2,6 +2,14 @@
  * Rectangle class used mostly to represent camera viewport and map dimensions
  */
 export class Rectangle {
+
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    right: number;
+    bottom: number;
+
     /**
      * Create a rectangle
      * @param {number} x starting X coordinate
@@ -9,7 +17,7 @@ export class Rectangle {
      * @param {number} width width
      * @param {number} height height
      */
-    constructor(x, y, width, height) {
+    constructor(x: number, y: number, width: number, height: number) {
         this.x = x || 0;
         this.y = y || 0;
         this.width = width || 0;
@@ -24,7 +32,7 @@ export class Rectangle {
      * @param {number}  [width]
      * @param {number}  [height]
      */
-    set(x, y, width, height) {
+    set(x: number, y: number, width?: number, height?: number) {
         this.x = x;
         this.y = y;
         this.width = width || this.width;
@@ -37,7 +45,7 @@ export class Rectangle {
      *
      * @returns {Boolean} if this rectangle is fully within rectangle, false otherwise
      */
-    within(rectangle) {
+    within(rectangle: Rectangle) {
         return (rectangle.x <= this.x &&
             rectangle.right >= this.right &&
             rectangle.y <= this.y &&

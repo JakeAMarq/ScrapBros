@@ -1,12 +1,3 @@
-import { Hero } from "./Hero"
-
-const Values = Object.freeze({
-    instructions: {
-        width: 370,
-
-    }
-})
-
 enum Types {
     Hero,
     Cannon,
@@ -17,7 +8,7 @@ enum Types {
     WinTile,
     Spike,
     InvisibleTile,
-    Checkpoint
+    Checkpoint,
 }
 
 enum Directions {

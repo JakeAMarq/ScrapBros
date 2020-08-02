@@ -1,8 +1,11 @@
 import { Entity } from './engine/Entity.js';
-import { DIRECTIONS, TYPES } from './Enums.js';
+import { Directions, Types } from './Enums.js';
 import { collisionDetected, CollisionManager } from './engine/CollisionManager.js';
-import { Rocket, Fire } from './Projectiles.js';
+import { Rocket, Fire, Projectile } from './Projectiles.js';
 import { Animation } from './engine/Animation.js';
+import { GameEngine } from './engine/GameEngine.js';
+import { HealthPack, ManaPack } from './environment/Collectables.js';
+import { Spike } from './environment/Spike.js';
 
 const IDLE_FRAME_WIDTH = 191;
 
@@ -10,13 +13,44 @@ const IDLE_FRAME_WIDTH = 191;
  * Class for the playable hero
  */
 export class Hero extends Entity {
+    idleR: Animation;
+    RunningR: Animation;
+    jumpAnimationR: Animation;
+    shootAnimationR: Animation;
+    jumping: boolean;
+    shootingBullets: boolean;
+    shootingFire: boolean;
+    walking: boolean;
+    direction: any;
+    velocity: number;
+    yAccel: number;
+    gravity: number;
+    jumpStart: boolean;
+    maxHP: number;
+    currentHP: number;
+    healthRegen: number;
+    manaRegen: number;
+    scale: number;
+    collisionDelay: number;
+    ticksSinceCollison: number;
+    collisionManager: CollisionManager;
+    ticksSinceShot: number;
+    startX: number;
+    startY: number;
+    currentMP: number;
+    maxMP: number;
+    idleL: Animation;
+    RunningL: Animation;
+    jumpAnimationL: Animation;
+    shootAnimationL: Animation;
+    accel: number;
     /**
      * Create a Hero object
      * @param {GameEngine} game
      * @param {Number} x
      * @param {Number} y
      */
-    constructor(game, x, y) {
+    constructor(game: GameEngine, x: number, y: number) {
         super(game, x, y);
         // Animations
         this.idleR = new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_R.png'), 0, 0, IDLE_FRAME_WIDTH, 351, 0.06, 10, true, false);
@@ -32,8 +66,8 @@ export class Hero extends Entity {
         this.shootingBullets = false;           // if the hero is attacking
         this.shootingFire = false;              // if the hero is shooting
         this.walking = false;                   // if the hero is walking
-        this.direction = DIRECTIONS.RIGHT;
-        this.type = TYPES.HERO;
+        this.direction = Directions.Right;
+        this.type = Types.Hero;
 
         this.velocity = 7;
         this.yAccel = 0;                // the heros vertical acceleration for gravity
@@ -95,16 +129,16 @@ export class Hero extends Entity {
             // Applying the effects of gravity
             this.yAccel += this.gravity;
             // Setting the hero to jump if the key is pressed and the hero is not jumping
-            if (!this.jumping && this.game.input.keysActive['Space']) {
+            if (!this.jumping && this.game.controls.activeKeyCodes.has('Space')) {
                 this.jumping = true;
             }
-            this.walking = this.game.input.keysActive['KeyD'] ||
-                this.game.input.keysActive['ArrowRight'] ||
-                this.game.input.keysActive['KeyA'] ||
-                this.game.input.keysActive['ArrowLeft'];
+            this.walking = this.game.controls.activeKeyCodes.has('KeyD') ||
+                this.game.controls.activeKeyCodes.has('ArrowRight') ||
+                this.game.controls.activeKeyCodes.has('KeyA') ||
+                this.game.controls.activeKeyCodes.has('ArrowLeft');
             if (this.walking) {
-                this.direction = (this.game.input.keysActive['KeyD'] ||
-                    this.game.input.keysActive[39]) ? DIRECTIONS.RIGHT : DIRECTIONS.LEFT;
+                this.direction = (this.game.controls.activeKeyCodes.has('KeyD') ||
+                    this.game.controls.activeKeyCodes.has('39')) ? Directions.Right : Directions.Left;
             }
             // The jumping function of the hero
             if (this.jumping) {
@@ -114,11 +148,11 @@ export class Hero extends Entity {
                 this.jumpStart = false;
             }
             if (this.walking) {
-                this.x += (this.direction === DIRECTIONS.RIGHT) ? this.velocity : -this.velocity;
+                this.x += (this.direction === Directions.Right) ? this.velocity : -this.velocity;
             }
             // Shooting function for the hero
-            this.shootingFire = this.game.input.mouse.rightDown;
-            this.shootingBullets = this.game.input.mouse.leftDown;
+            this.shootingFire = this.game.controls.mouse.rightDown;
+            this.shootingBullets = this.game.controls.mouse.leftDown;
             if (this.shootingBullets) {
                 this.shootBullet();
             }
@@ -146,11 +180,11 @@ export class Hero extends Entity {
      * @param {Number} xView
      * @param {Number} yView
      */
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         const drawX = this.x - xView;
         const drawY = this.y - yView;
-        // if (this.shootingFire || this.game.input.keysActive['F'.charCodeAt(0)] || this.shootingBullets) {
-        //     (this.game.input.mouse.x > this.x + this.width / 2 ? this.shootAnimationR : this.shootAnimationL)
+        // if (this.shootingFire || this.game.controls.activeKeyCodes['F'.charCodeAt(0)] || this.shootingBullets) {
+        //     (this.game.controls.mouse.x > this.x + this.width / 2 ? this.shootAnimationR : this.shootAnimationL)
         //         .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
         // }
         // else if (this.jumping) {
@@ -168,19 +202,19 @@ export class Hero extends Entity {
         //         .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
         // }
         if (this.shootingFire || this.shootingBullets) {
-            (this.game.input.mouse.x > this.x + this.width / 2 ? this.shootAnimationR : this.shootAnimationL)
+            (this.game.controls.mouse.currentX > this.x + this.width / 2 ? this.shootAnimationR : this.shootAnimationL)
                 .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
         }
         else if (this.jumping) {
-            (this.direction === DIRECTIONS.RIGHT ? this.jumpAnimationR : this.jumpAnimationL)
+            (this.direction === Directions.Right ? this.jumpAnimationR : this.jumpAnimationL)
                 .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
         }
         else if (this.walking) {
-            (this.direction === DIRECTIONS.RIGHT ? this.RunningR : this.RunningL)
+            (this.direction === Directions.Right ? this.RunningR : this.RunningL)
                 .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
         }
         else {
-            (this.direction === DIRECTIONS.RIGHT ? this.idleR : this.idleL)
+            (this.direction === Directions.Right ? this.idleR : this.idleL)
                 .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
         }
     }
@@ -189,7 +223,7 @@ export class Hero extends Entity {
      * Prevents Hero from walking/falling/jumping into entity
      * @param {Entity} entity
      */
-    blockMovement(entity) {
+    blockMovement(entity: Entity) {
         if (this.collisionManager.topCollisionDetected(entity)) {
             this.y = entity.y + this.height;
             this.yAccel = 0;
@@ -209,46 +243,50 @@ export class Hero extends Entity {
             this.x = entity.x + entity.width;
         }
     }
-    handleCollision(entity) {
+    handleCollision(entity: Entity) {
         switch (entity.type) {
-            case TYPES.PROJECTILE:
-                if (!entity.friendly)
-                    this.changeHP(-entity.damage);
+            case Types.Projectile:
+                let projectile = entity as Projectile;
+                if (!projectile.friendly)
+                    this.changeHP(-projectile.damage);
                 break;
-            case TYPES.COLLECTABLES.HEALTHPACK:
-                this.changeHP(entity.healthValue);
-                entity.removeFromWorld = true;
+            case Types.HealthPack:
+                let healthPack = entity as HealthPack;
+                this.changeHP(healthPack.healthValue);
+                healthPack.removeFromWorld = true;
                 break;
-            case TYPES.COLLECTABLES.MANAPACK:
-                this.changeMP(entity.manaValue);
-                entity.removeFromWorld = true;
+            case Types.ManaPack:
+                let manaPack = entity as ManaPack;
+                this.changeMP(manaPack.manaValue);
+                manaPack.removeFromWorld = true;
                 break;
-            case TYPES.WIN:
+            case Types.WinTile:
                 this.win = true;
                 break;
-            case TYPES.CHECKPOINT:
+            case Types.Checkpoint:
                 this.startX = entity.x;
                 this.startY = entity.y - 100;
                 break;
-            case TYPES.CANNON:
+            case Types.Cannon:
                 if (this.ticksSinceCollison >= this.collisionDelay) {
                     this.changeHP(-20);
                     this.ticksSinceCollison = 0;
                 }
                 this.blockMovement(entity);
                 break;
-            case TYPES.INVISIBLE:
-            case TYPES.PLATFORM:
+            case Types.InvisibleTile:
+            case Types.Platform:
                 this.blockMovement(entity);
                 break;
-            case TYPES.SPIKE:
-                if (entity.collisionManager.topCollisionDetected(this)) {
+            case Types.Spike:
+                let spike = entity as Spike;
+                if (spike.collisionManager.topCollisionDetected(this)) {
                     if (this.ticksSinceCollison >= this.collisionDelay) {
-                        this.changeHP(-entity.damage);
+                        this.changeHP(-spike.damage);
                         this.ticksSinceCollison = 0;
                     }
                 }
-                this.blockMovement(entity);
+                this.blockMovement(spike);
                 break;
         }
     }
@@ -268,14 +306,14 @@ export class Hero extends Entity {
         }
         this.collisionManager.updateDimensions(this.x, this.y, this.width, this.height);
     }
-    changeHP(amount) {
+    changeHP(amount: number) {
         this.currentHP += amount;
         if (this.currentHP < 0)
             this.currentHP = 0;
         else if (this.currentHP > this.maxHP)
             this.currentHP = this.maxHP;
     }
-    changeMP(amount) {
+    changeMP(amount: number) {
         this.currentMP += amount;
         if (this.currentMP < 0)
             this.currentMP = 0;
@@ -284,14 +322,14 @@ export class Hero extends Entity {
     }
     shootBullet() {
         // Need to figure out way to have offset scale with bullet's width/height
-        const startX = this.game.input.mouse.x > this.x + this.width / 2 ? this.x + 180 * this.scale : this.x;
+        const startX = this.game.controls.mouse.currentX > this.x + this.width / 2 ? this.x + 180 * this.scale : this.x;
         var startY = this.y + 145 * this.scale;
         let rocket;
         if (this.walking) {
-            rocket = new Rocket(this.game, startX, startY, this.game.input.mouse.x, this.game.input.mouse.y, (this.direction === DIRECTIONS.RIGHT ? 1 : -1) * this.velocity, true);
+            rocket = new Rocket(this.game, startX, startY, this.game.controls.mouse.currentX, this.game.controls.mouse.currentY, (this.direction === Directions.Right ? 1 : -1) * this.velocity, true);
         }
         else {
-            rocket = new Rocket(this.game, startX, startY, this.game.input.mouse.x, this.game.input.mouse.y, 0, true);
+            rocket = new Rocket(this.game, startX, startY, this.game.controls.mouse.currentX, this.game.controls.mouse.currentY, 0, true);
         }
         if (this.ticksSinceShot >= rocket.fireRate && this.currentMP >= rocket.manaCost) {
             this.game.addEntity(rocket);
@@ -301,14 +339,14 @@ export class Hero extends Entity {
     }
     shootFire() {
         // Need to figure out way to have offset scale with fire's width/height
-        var startX = this.game.input.mouse.x > this.x + this.width / 2 ? this.x + 160 * this.scale : this.x;
+        var startX = this.game.controls.mouse.currentX > this.x + this.width / 2 ? this.x + 160 * this.scale : this.x;
         var startY = this.y + 140 * this.scale;
         let fire;
         if (this.walking) {
-            fire = new Fire(this.game, startX, startY, this.game.input.mouse.x, this.game.input.mouse.y, (this.direction === DIRECTIONS.RIGHT ? 1 : -1) * this.velocity, true);
+            fire = new Fire(this.game, startX, startY, this.game.controls.mouse.currentX, this.game.controls.mouse.currentY, (this.direction === Directions.Right ? 1 : -1) * this.velocity, true);
         }
         else {
-            fire = new Fire(this.game, startX, startY, this.game.input.mouse.x, this.game.input.mouse.y, 0, true);
+            fire = new Fire(this.game, startX, startY, this.game.controls.mouse.currentX, this.game.controls.mouse.currentY, 0, true);
         }
         if (this.ticksSinceShot >= fire.fireRate && this.currentMP >= fire.manaCost) {
             this.game.addEntity(fire);

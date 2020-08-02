@@ -1,8 +1,9 @@
 import { Entity } from './engine/Entity.js';
-import { TYPES } from './Enums.js';
+import { Types } from './Enums.js';
 import { collisionDetected } from './engine/CollisionManager.js';
 import { Physics } from './engine/Physics.js';
 import { Animation } from './engine/Animation.js';
+import { GameEngine } from './engine/GameEngine.js';
 
 /**
  * Super class for projectiles
@@ -17,7 +18,17 @@ import { Animation } from './engine/Animation.js';
  * @param {Animation} img       Animation object for when projectile is in flight
  */
 class Projectile extends Entity {
-    constructor(game, x, y, scale, fireRate, damage, friendly, physics, img) {
+
+    scale: number;
+    fireRate: number;
+    damage: number;
+    friendly: boolean;
+    physics: Physics;
+    img: Animation;
+    type: Types;
+    exploding: boolean;
+
+    constructor(game: GameEngine, x: number, y: number, scale: number, fireRate: number, damage: number, friendly: boolean, physics: Physics, img: Animation) {
         super(game, x, y);
         this.scale = scale;
         this.fireRate = fireRate;
@@ -25,20 +36,20 @@ class Projectile extends Entity {
         this.friendly = friendly;
         this.physics = physics;
         this.img = img;
-        this.type = TYPES.PROJECTILE;
+        this.type = Types.Projectile;
     }
-    handleCollision(entity) {
+    handleCollision(entity: Entity) {
         switch (entity.type) {
-            case TYPES.HERO:
+            case Types.Hero:
                 if (!this.friendly)
                     this.removeFromWorld = true;
                 break;
-            case TYPES.CANNON:
+            case Types.Cannon:
                 if (this.friendly)
                     this.removeFromWorld = true;
                 break;
-            case TYPES.PLATFORM:
-            case TYPES.SPIKE:
+            case Types.Platform:
+            case Types.Spike:
                 this.removeFromWorld = true;
                 break;
         }
@@ -62,7 +73,7 @@ class Projectile extends Entity {
         Entity.prototype.update.call(this);
     }
     // Reference: https://www.w3schools.com/graphics/game_rotation.asp 
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         ctx.save();
         ctx.translate(this.x + this.width / 2 - xView, this.y + this.height / 2 - yView);
         ctx.rotate(this.physics.currentAngle);
@@ -79,7 +90,12 @@ class Projectile extends Entity {
  * @param {number} y            starting Y coordinate
  */
 class Rocket extends Projectile {
-    constructor(game, x, y, destX, destY, initialVelocity, friendly) {
+
+    manaCost: number;
+    explosionAnimation: Animation;
+    exploding: boolean;
+
+    constructor(game: GameEngine, x: number, y: number, destX: number, destY: number, initialVelocity: number, friendly: boolean) {
         var scale = 0.5;
         var fireRate = 20;
         var damage = 5;
@@ -93,23 +109,21 @@ class Rocket extends Projectile {
         this.width = 25 * scale;
         this.height = 25 * scale;
         this.manaCost = 5;
-        this.explosion = new Animation(this.game.assetManager.getAsset('./resources/img/projectiles/explosion.png'), 0, 0, 51, 51, 0.025, 7, false, false);
+        this.explosionAnimation = new Animation(this.game.assetManager.getAsset('./resources/img/projectiles/explosion.png'), 0, 0, 51, 51, 0.025, 7, false, false);
         this.exploding = false;
-        this.explosion_audio = false; // make sure the explosion sound only plays once.
-        this.shoot_audio = false;
     }
-    handleCollision(entity) {
+    handleCollision(entity: Entity) {
         switch (entity.type) {
-            case TYPES.HERO:
+            case Types.Hero:
                 if (!this.friendly)
                     this.exploding = true;
                 break;
-            case TYPES.CANNON:
+            case Types.Cannon:
                 if (this.friendly)
                     this.exploding = true;
                 break;
-            case TYPES.PLATFORM:
-            case TYPES.SPIKE:
+            case Types.Platform:
+            case Types.Spike:
                 this.exploding = true;
                 break;
         }
@@ -134,17 +148,13 @@ class Rocket extends Projectile {
             }
         }
         else {
-            // if(!this.explosion_audio){
-            //     this.explosion_audio = true;
-            //     (new Audio("./sounds/rocket_explode.mp3")).play();
-            // }
             this.exploding = true;
         }
-        if (this.exploding && this.explosion.isDone())
+        if (this.exploding && this.explosionAnimation.isDone())
             this.removeFromWorld = true;
         Entity.prototype.update.call(this);
     }
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         if (!this.exploding) {
             ctx.save();
             ctx.translate(this.x + this.width / 2 - xView, this.y + this.height / 2 - yView);
@@ -155,7 +165,7 @@ class Rocket extends Projectile {
         else {
             var imgWidthOffset = (this.width / 0.6); // adjust the position of the explosion so the image is centered
             var imgHeightOffset = (this.height / 0.6);
-            this.explosion.drawFrame(this.game.clockTick, ctx, this.x - xView - imgWidthOffset, this.y - yView - imgHeightOffset, this.scale * 2);
+            this.explosionAnimation.drawFrame(this.game.clockTick, ctx, this.x - xView - imgWidthOffset, this.y - yView - imgHeightOffset, this.scale * 2);
         }
     }
 }
@@ -167,7 +177,9 @@ class Rocket extends Projectile {
  * @param {number} y            starting Y coordinate
  */
 class Fire extends Projectile {
-    constructor(game, x, y, destX, destY, initialVelocity, friendly) {
+    manaCost: number;
+
+    constructor(game: GameEngine, x: number, y: number, destX: number, destY: number, initialVelocity: number, friendly: boolean) {
         var scale = 2;
         var fireRate = 1;
         var damage = 0.25;
@@ -182,7 +194,7 @@ class Fire extends Projectile {
         this.height = 9 * scale;
         this.manaCost = 0;
     }
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         ctx.save();
         ctx.translate(this.x + this.width / 2 - xView, this.y + this.height / 2 - yView);
         ctx.rotate(this.physics.currentAngle);
@@ -191,4 +203,4 @@ class Fire extends Projectile {
     }
 }
 
-export { Rocket, Fire };
+export { Projectile, Rocket, Fire };

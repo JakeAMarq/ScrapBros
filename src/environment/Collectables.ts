@@ -1,21 +1,25 @@
 import { Entity } from '../engine/Entity.js';
-import { TYPES } from '../Enums.js';
+import { Types } from '../Enums.js';
 import { Animation } from '../engine/Animation.js';
+import { GameEngine } from '../engine/GameEngine.js';
 
 /**
  * HealthPack entity
  */
 class HealthPack extends Entity {
+    img: Animation;
+    healthValue: number;
+    scale: number;
     /**
      * Constructor
      * @param {GameEngine} game
      * @param {Number} x
      * @param {Number} y
      */
-    constructor(game, x, y) {
+    constructor(game: GameEngine, x: number, y: number) {
         super(game, x, y);
         this.img = new Animation(this.game.assetManager.getAsset('./resources/img/environment/collectables/healthPack.png'), 0, 0, 52, 52, 1, 1, true, false);
-        this.type = TYPES.COLLECTABLES.HEALTHPACK;
+        this.type = Types.HealthPack;
         this.healthValue = 25;
         this.scale = 1;
         this.width = 52;
@@ -28,7 +32,7 @@ class HealthPack extends Entity {
      * @param {Number} xView
      * @param {Number} yView
      */
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         this.img.drawFrame(this.game.clockTick, ctx, this.x - xView, this.y - yView, this.scale);
     }
 }
@@ -37,16 +41,19 @@ class HealthPack extends Entity {
  * ManaPack entity
  */
 class ManaPack extends Entity {
+    img: Animation;
+    manaValue: number;
+    scale: number;
     /**
      * Constructor
      * @param {GameEngine} game
      * @param {Number} x
      * @param {Number} y
      */
-    constructor(game, x, y) {
+    constructor(game: GameEngine, x: number, y: number) {
         super(game, x, y);
         this.img = new Animation(this.game.assetManager.getAsset('./resources/img/environment/collectables/manaPack.png'), 0, 0, 52, 52, 1, 1, true, false);
-        this.type = TYPES.COLLECTABLES.MANAPACK;
+        this.type = Types.ManaPack;
         this.manaValue = 25;
         this.scale = 1;
         this.width = 52;
@@ -59,7 +66,7 @@ class ManaPack extends Entity {
      * @param {Number} xView
      * @param {Number} yView
      */
-    draw(ctx, xView, yView) {
+    draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         this.img.drawFrame(this.game.clockTick, ctx, this.x - xView, this.y - yView, this.scale);
     }
 }

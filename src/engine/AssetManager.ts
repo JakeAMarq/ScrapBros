@@ -2,10 +2,15 @@
  * Asset manager class for loading images from files
  */
 export class AssetManager {
+    successCount: number;
+    errorCount: number;
+    cache: Map<string, HTMLImageElement>;
+    downloadQueue: string[];
+
     constructor() {
         this.successCount = 0;
         this.errorCount = 0;
-        this.cache = [];
+        this.cache = new Map();
         this.downloadQueue = [];
     }
 
@@ -13,7 +18,7 @@ export class AssetManager {
      * Pushes image file at path onto downloadQueue
      * @param {String} path
      */
-    queueDownload(path) {
+    queueDownload(path: string) {
         console.log('Queueing ' + path);
         this.downloadQueue.push(path);
     }
@@ -31,7 +36,7 @@ export class AssetManager {
      * Attempts to load every file in downloadQueue into cache as Image object, then executes callback
      * @callback callback
      */
-    downloadAll(callback) {
+    downloadAll(callback: Function) {
         for (let i = 0; i < this.downloadQueue.length; i++) {
             const img = new Image();
             const that = this;
@@ -50,7 +55,7 @@ export class AssetManager {
                     callback();
             });
             img.src = path;
-            this.cache[path] = img;
+            this.cache.set(path, img);
         }
     }
 
@@ -59,8 +64,8 @@ export class AssetManager {
      * @param {String} path
      * @returns {Image | undefined}
      */
-    getAsset(path) {
-        return this.cache[path];
+    getAsset(path: string): HTMLImageElement {
+        return this.cache.get(path);
     }
 }
 

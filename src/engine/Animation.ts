@@ -2,6 +2,17 @@
  * Animation class for spriteSheet animations
  */
 export class Animation {
+    spriteSheet: any;
+    startX: number;
+    startY: number;
+    frameWidth: number;
+    frameDuration: number;
+    frameHeight: number;
+    frames: number;
+    totalTime: number;
+    elapsedTime: number;
+    loop: boolean;
+    reverse: boolean;
     /**
      * Constructor
      * @param {Image} spriteSheet
@@ -14,7 +25,7 @@ export class Animation {
      * @param {Boolean} loop
      * @param {Boolean} reverse
      */
-    constructor(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop, reverse) {
+    constructor(spriteSheet: HTMLImageElement, startX: number, startY: number, frameWidth: number, frameHeight: number, frameDuration: number, frames: number, loop: boolean, reverse: boolean) {
         this.spriteSheet = spriteSheet;
         this.startX = startX;
         this.startY = startY;
@@ -36,7 +47,7 @@ export class Animation {
      * @param {Number} y
      * @param {Number} [scaleBy]
      */
-    drawFrame(tick, ctx, x, y, scaleBy) {
+    drawFrame(tick: number, ctx: CanvasRenderingContext2D, x: number, y: number, scaleBy?: number) {
         scaleBy = scaleBy || 1;
         this.elapsedTime += tick;
         if (this.loop) {

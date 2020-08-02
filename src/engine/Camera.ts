@@ -1,9 +1,21 @@
 // Reference: http://jsfiddle.net/gfcarv/QKgHs/ 
 import { Rectangle } from './Rectangle.js';
+import { Entity } from './Entity.js';
 /**
  * @ Camera class
  */
 export class Camera {
+
+  xView: number;
+  yView: number;
+  xDeadZone: number;
+  yDeadZone: number;
+  wView: number;
+  hView: number;
+  followed: Entity;
+  viewportRect: Rectangle;
+  worldRect: Rectangle;
+
   /**
    * Create a Camera object
    * @param {Entity} followed         entity that camera will follow
@@ -14,7 +26,7 @@ export class Camera {
    * @param {number} worldWidth       width of entire map
    * @param {number} worldHeight      height of entire map
    */
-  constructor(followed, xView, yView, viewportWidth, viewportHeight, worldWidth, worldHeight) {
+  constructor(followed: Entity, xView: number, yView: number, viewportWidth: number, viewportHeight: number, worldWidth: number, worldHeight: number) {
     this.xView = xView || 0;
     this.yView = yView || 0;
     this.xDeadZone = viewportWidth / 2;
@@ -34,7 +46,7 @@ export class Camera {
    * @param {number} xDeadZone    minimum distance from entity to viewport's edge on x axis
    * @param {number} yDeadZone    minimum distance from entity to viewport's edge on y axis
    */
-  follow(entity, xDeadZone, yDeadZone) {
+  follow(entity: Entity, xDeadZone: number, yDeadZone: number) {
     this.followed = entity;
     this.xDeadZone = xDeadZone;
     this.yDeadZone = yDeadZone;

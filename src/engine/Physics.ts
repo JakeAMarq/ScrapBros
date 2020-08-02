@@ -12,7 +12,26 @@
  * @description Attach physics properties to an object
  */
 export class Physics {
-    constructor(startX, startY, duration, cursorX, cursorY, gravity, initalVelocity, velocity, acceleration) {
+    cursorX: number;
+    cursorY: number;
+    gravity: number;
+    acceleration: number;
+    bounces: boolean;
+    sticks: boolean;
+    startX: number;
+    startY: number;
+    x: number;
+    y: number;
+    time: number;
+    endTime: number;
+    velocity: number;
+    dead: boolean;
+    initialAngle: number;
+    currentAngle: number;
+    initialVelocity: number;
+    currentVelocity: number;
+
+    constructor(startX: number, startY: number, duration: number, cursorX: number, cursorY: number, gravity: number, initalVelocity: number, velocity: number, acceleration: number) {
         this.cursorX = cursorX;
         this.cursorY = cursorY;
         this.gravity = gravity;
@@ -86,7 +105,7 @@ export class Physics {
      * @param {Number} endX - ending point on x axis
      * @param {Number} endY - ending point on y axis
      */
-    calculateAngle(startX, startY, endX, endY) {
+    calculateAngle(startX: number, startY: number, endX: number, endY: number) {
         var deltaX = endX - startX;
         var deltaY = endY - startY;
         return Math.atan2(deltaY, deltaX);
@@ -94,21 +113,21 @@ export class Physics {
     /**
      * @param {Number} gravity - Graviational Constant in pixels per frame
      */
-    setGravity(gravity) {
+    setGravity(gravity: number) {
         //Update gravity
         this.gravity = gravity;
     }
     /**
      * @param {Number} velocity - Velocity Constant in pixels per frame
      */
-    setVelocity(velocity) {
+    setVelocity(velocity: number) {
         //Update initialVelocity so equations will calculate the proper currentVelocity
         this.initialVelocity = velocity;
     }
     /**
      * @param {Number} velocity - Velocity Constant in pixels per frame
      */
-    setAcceleration(acceleration) {
+    setAcceleration(acceleration: number) {
         //update acceleration so equations will calculate the proper currentVelocity
         this.acceleration = acceleration;
     }
