@@ -7,7 +7,32 @@ import { GameEngine } from './engine/GameEngine.js';
 import { HealthPack, ManaPack } from './environment/Collectables.js';
 import { Spike } from './environment/Spike.js';
 
-const IDLE_FRAME_WIDTH = 191;
+const sprites = Object.freeze({
+    idle: {
+        width: 191,
+        height: 351,
+        frameDuration: 0.06,
+        frames: 10
+    },
+    running: {
+        width: 214,
+        height: 359,
+        frameDuration: 0.04,
+        frames: 10
+    },
+    jumping: {
+        width: 213,
+        height: 344,
+        frameDuration: 0.2,
+        frames: 10
+    }, 
+    shooting: {
+        width: 223,
+        height: 344,
+        frameDuration: 0.03,
+        frames: 5
+    }
+});
 
 /**
  * Class for the playable hero
@@ -50,8 +75,8 @@ export class Hero extends Entity {
     ticksSinceCollison: number;
     collisionManager: CollisionManager;
     ticksSinceShot: number;
-    startX: number;
-    startY: number;
+    checkpointX: number;
+    checkpointY: number;
     /**
      * Create a Hero object
      * @param {GameEngine} game
@@ -62,14 +87,22 @@ export class Hero extends Entity {
         super(game, x, y);
         // Animations
         this.animations = {
-            idleR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_R.png'), 0, 0, IDLE_FRAME_WIDTH, 351, 0.06, 10, true, false),
-            idleL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_L.png'), 0, 0, IDLE_FRAME_WIDTH, 351, 0.06, 10, true, false),
-            runningR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Walk2_R.png'), 0, 0, 214, 359, 0.04, 10, true, false),
-            runningL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Walk2_L.png'), 0, 0, 214, 359, 0.04, 10, true, false),
-            jumpingR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Jump2_R.png'), 0, 0, 213, 344, 0.2, 10, true, false),
-            jumpingL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Jump2_L.png'), 0, 0, 213, 344, 0.2, 10, true, false),
-            shootingR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Shoot2_R.png'), 0, 0, 223, 344, 0.03, 5, true, false),
-            shootingL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Shoot2_L.png'), 0, 0, 223, 344, 0.03, 5, true, false),
+            idleR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_R.png'), 0, 0, 
+                sprites.idle.width, sprites.idle.height, sprites.idle.frameDuration, sprites.idle.frames, true, false),
+            idleL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Idle_L.png'), 0, 0, 
+                sprites.idle.width, sprites.idle.height, sprites.idle.frameDuration, sprites.idle.frames, true, false),
+            runningR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Walk2_R.png'), 0, 0, 
+                sprites.running.width, sprites.running.height, sprites.running.frameDuration, sprites.running.frames, true, false),
+            runningL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Walk2_L.png'), 0, 0,  
+                sprites.running.width, sprites.running.height, sprites.running.frameDuration, sprites.running.frames, true, false),
+            jumpingR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Jump2_R.png'), 0, 0, 
+                sprites.jumping.width, sprites.jumping.height, sprites.jumping.frameDuration, sprites.jumping.frames, true, false),
+            jumpingL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Jump2_L.png'), 0, 0, 
+                sprites.jumping.width, sprites.jumping.height, sprites.jumping.frameDuration, sprites.jumping.frames, true, false),
+            shootingR : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Shoot2_R.png'), 0, 0, 
+                sprites.shooting.width, sprites.shooting.height, sprites.shooting.frameDuration, sprites.shooting.frames, true, false),
+            shootingL : new Animation(this.game.assetManager.getAsset('./resources/img/hero/Cyborg_Shoot2_L.png'), 0, 0, 
+                sprites.shooting.width, sprites.shooting.height, sprites.shooting.frameDuration, sprites.shooting.frames, true, false),
             scale: 0.25 
         }
 
@@ -100,8 +133,8 @@ export class Hero extends Entity {
             manaRegen: 0
         };
 
-        this.width = 191 * this.animations.scale;
-        this.height = 351 * this.animations.scale;
+        this.width = sprites.idle.width * this.animations.scale;
+        this.height = sprites.idle.height * this.animations.scale;
 
         this.collisionDelay = 60;
         this.ticksSinceCollison = 60;
@@ -109,8 +142,8 @@ export class Hero extends Entity {
         this.ticksSinceShot = 0;
 
         this.win = false;
-        this.startX = x;
-        this.startY = y;
+        this.checkpointX = x;
+        this.checkpointY = y;
     }
     /**
      * Update Hero's properties by checking/handling collisions and reading/applying player's input
@@ -147,9 +180,12 @@ export class Hero extends Entity {
         // Applying the effects of gravity
         this.physics.yAccel += this.physics.gravity;
         // Setting the hero to jump if the key is pressed and the hero is not jumping
-        if (!this.actions.jumping && this.game.controls.activeKeyCodes.has('Space')) {
+        if (this.physics.canJump && this.game.controls.activeKeyCodes.has('Space')) {
             this.startJump();
         }
+
+        this.actions.shootingFire = this.game.controls.mouse.rightDown;
+        this.actions.shootingBullets = this.game.controls.mouse.leftDown;
         this.actions.walking = this.game.controls.activeKeyCodes.has('KeyD') ||
             this.game.controls.activeKeyCodes.has('ArrowRight') ||
             this.game.controls.activeKeyCodes.has('KeyA') ||
@@ -164,8 +200,6 @@ export class Hero extends Entity {
             this.x += this.physics.velocity * (this.direction === Directions.Right ? 1 : -1);
         }
         // Shooting function for the hero
-        this.actions.shootingFire = this.game.controls.mouse.rightDown;
-        this.actions.shootingBullets = this.game.controls.mouse.leftDown;
         if (this.actions.shootingBullets) {
             this.shootBullet();
         }
@@ -190,24 +224,7 @@ export class Hero extends Entity {
     draw(ctx: CanvasRenderingContext2D, xView: number, yView: number) {
         const drawX = this.x - xView;
         const drawY = this.y - yView;
-        // if (this.shootingFire || this.game.controls.activeKeyCodes['F'.charCodeAt(0)] || this.shootingBullets) {
-        //     (this.game.controls.mouse.x > this.x + this.width / 2 ? this.shootAnimationR : this.shootAnimationL)
-        //         .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
-        // }
-        // else if (this.jumping) {
-        //     (this.direction == DIRECTIONS.RIGHT ? this.jumpAnimationR : this.jumpAnimationL)
-        //         .drawFrame(this.game.clockTick, ctx, drawX - 100 * this.scale, drawY, this.scale);
-        // }
-        // else if (this.walking) {
-        //     if (this.direction == DIRECTIONS.RIGHT) {
-        //         this.RunningR.drawFrame(this.game.clockTick, ctx, drawX - 100 * this.scale, drawY, this.scale);
-        //     } else {
-        //         this.RunningL.drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
-        //     }
-        // } else {
-        //     (this.direction == DIRECTIONS.RIGHT ? this.idleR : this.idleL)
-        //         .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.scale);
-        // }
+
         if (this.actions.shootingFire || this.actions.shootingBullets) {
             (this.game.controls.mouse.currentX > this.x + this.width / 2 ? this.animations.shootingR : this.animations.shootingL)
                 .drawFrame(this.game.clockTick, ctx, drawX, drawY, this.animations.scale);
@@ -271,8 +288,8 @@ export class Hero extends Entity {
                 this.win = true;
                 break;
             case Types.Checkpoint:
-                this.startX = entity.x;
-                this.startY = entity.y - 100;
+                this.checkpointX = entity.x;
+                this.checkpointY = entity.y - 100;
                 break;
             case Types.Cannon:
                 if (this.ticksSinceCollison >= this.collisionDelay) {
@@ -308,8 +325,8 @@ export class Hero extends Entity {
             this.height = 343 * this.animations.scale;
         }
         else {
-            this.width = 191 * this.animations.scale;
-            this.height = 351 * this.animations.scale;
+            this.width = sprites.idle.width * this.animations.scale;
+            this.height = sprites.idle.height * this.animations.scale;
         }
         this.collisionManager.updateDimensions(this.x, this.y, this.width, this.height);
     }
@@ -330,7 +347,7 @@ export class Hero extends Entity {
     shootBullet() {
         // Need to figure out way to have offset scale with bullet's width/height
         const startX = this.game.controls.mouse.currentX > this.x + this.width / 2 ? this.x + 180 * this.animations.scale : this.x;
-        var startY = this.y + 145 * this.animations.scale;
+        const startY = this.y + 145 * this.animations.scale;
         let rocket;
         if (this.actions.walking) {
             rocket = new Rocket(this.game, startX, startY, this.game.controls.mouse.currentX, this.game.controls.mouse.currentY, (this.direction === Directions.Right ? 1 : -1) * this.physics.velocity, true);
@@ -363,8 +380,8 @@ export class Hero extends Entity {
     }
     goToLastCheckpoint() {
         this.physics.yAccel = 0;
-        this.x = this.startX;
-        this.y = this.startY;
+        this.x = this.checkpointX;
+        this.y = this.checkpointY;
         this.stats.currentHP = this.stats.maxHP;
         this.stats.currentMP = this.stats.maxMP;
     }
