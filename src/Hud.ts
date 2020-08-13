@@ -1,6 +1,7 @@
 import { Entity } from './engine/Entity.js';
 import { Animation } from './engine/Animation.js';
 import { GameEngine } from './engine/GameEngine.js';
+import { Hero } from './Hero';
 
 class Instructions extends Entity {
     width: number = 370;
@@ -33,9 +34,9 @@ class ResourceBars extends Entity {
         this.scale = 0.4;
     }
     update() {
-        var hero = this.game.entities[1];
-        this.healthPercent = hero.currentHP / hero.maxHP;
-        this.manaPercent = hero.currentMP / hero.maxMP;
+        var hero = this.game.entities[1] as Hero;
+        this.healthPercent = hero.stats.currentHP / hero.stats.maxHP;
+        this.manaPercent = hero.stats.currentMP / hero.stats.maxMP;
         if (this.healthPercent < 0)
             this.healthPercent = 0;
         if (this.manaPercent < 0)
